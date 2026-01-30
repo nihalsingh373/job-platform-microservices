@@ -2,39 +2,42 @@ version: "3.8"
 
 services:
   postgres:
-    container_name: postgres_container
-    image: postgres
+    image: postgres:15
+    container_name: db
     environment:
-      POSTGRES_USER: embarkx
-      POSTGRES_PASSWORD: embarkx
-      PGDATA: /data/postgres
-    volumes:
-      - postgres:/data/postgres
+      POSTGRES_DB: company
+      POSTGRES_USER: nihal
+      POSTGRES_PASSWORD: nihal
     ports:
       - "5432:5432"
-    networks:
-      - postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
 
   pgadmin:
-    container_name: pgadmin_container
     image: dpage/pgadmin4
+    container_name: pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-    volumes:
-      - pgadmin:/var/lib/pgadmin
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: nihal
     ports:
       - "5050:80"
-    networks:
+    depends_on:
       - postgres
     restart: unless-stopped
 
-networks:
-  postgres:
-    driver: bridge
+  app:
+    image: monolithic-app
+    container_name: monolithic-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/company
+      SPRING_DATASOURCE_USERNAME: nihal
+      SPRING_DATASOURCE_PASSWORD: nihal
+    restart: unless-stopped
 
 volumes:
-  postgres:
-  pgadmin:
+  postgres_data:
