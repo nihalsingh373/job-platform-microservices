@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: company
+      POSTGRES_USER: nihal
+      POSTGRES_PASSWORD: nihal
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  company-service:
+    image: nihalsingh321/company-service:latest
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/company
+      SPRING_DATASOURCE_USERNAME: nihal
+      SPRING_DATASOURCE_PASSWORD: nihal
+    depends_on:
+      - postgres
+
+  job-service:
+    image: nihalsingh321/job-service:latest
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/company
+      SPRING_DATASOURCE_USERNAME: nihal
+      SPRING_DATASOURCE_PASSWORD: nihal
+    depends_on:
+      - postgres
+
+  review-service:
+    image: nihalsingh321/review-service:latest
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/company
+      SPRING_DATASOURCE_USERNAME: nihal
+      SPRING_DATASOURCE_PASSWORD: nihal
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
