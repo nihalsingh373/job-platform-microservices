@@ -1,4 +1,4 @@
-name: CI - Build All Microservices
+name: CI - Maven Build (Java 21)
 
 on:
   push:
@@ -8,9 +8,40 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      # 1. Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Say hello
-        run: echo "CI is now detected correctly"
+      # 2. Setup Java 21
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: maven
+
+      # 3. Build API Gateway
+      - name: Build API Gateway
+        run: |
+          cd api-gateway/gateway
+          mvn clean package -DskipTests
+
+      # 4. Build Company Service
+      - name: Build Company Service
+        run: |
+          cd company-service/companyms
+          mvn clean package -DskipTests
+
+      # 5. Build Job Service
+      - name: Build Job Service
+        run: |
+          cd job-service/jobms
+          mvn clean package -DskipTests
+
+      # 6. Build Review Service
+      - name: Build Review Service
+        run: |
+          cd review-service/reviewms
+          mvn clean package -DskipTests
