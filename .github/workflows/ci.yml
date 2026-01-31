@@ -1,4 +1,4 @@
-name: CI - Maven Build (Java 21)
+name: CI - Maven & Docker Build (Java 21)
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout code
+      # 1. Checkout source code
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -22,26 +22,46 @@ jobs:
           java-version: '21'
           cache: maven
 
-      # 3. Build API Gateway
-      - name: Build API Gateway
+      # 3. Maven build - API Gateway
+      - name: Maven build - API Gateway
         run: |
           cd api-gateway/gateway
           mvn clean package -DskipTests
 
-      # 4. Build Company Service
-      - name: Build Company Service
+      # 4. Maven build - Company Service
+      - name: Maven build - Company Service
         run: |
           cd company-service/companyms
           mvn clean package -DskipTests
 
-      # 5. Build Job Service
-      - name: Build Job Service
+      # 5. Maven build - Job Service
+      - name: Maven build - Job Service
         run: |
           cd job-service/jobms
           mvn clean package -DskipTests
 
-      # 6. Build Review Service
-      - name: Build Review Service
+      # 6. Maven build - Review Service
+      - name: Maven build - Review Service
         run: |
           cd review-service/reviewms
           mvn clean package -DskipTests
+
+      # 7. Docker build - API Gateway
+      - name: Docker build - API Gateway
+        run: |
+          docker build -t api-gateway:ci ./api-gateway/gateway
+
+      # 8. Docker build - Company Service
+      - name: Docker build - Company Service
+        run: |
+          docker build -t company-service:ci ./company-service/companyms
+
+      # 9. Docker build - Job Service
+      - name: Docker build - Job Service
+        run: |
+          docker build -t job-service:ci ./job-service/jobms
+
+      # 10. Docker build - Review Service
+      - name: Docker build - Review Service
+        run: |
+          docker build -t review-service:ci ./review-service/reviewms
